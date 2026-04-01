@@ -6,7 +6,7 @@ A responsive News Web Application that fetches real-time news using a public API
 
 ## 🌐 API Used
 
-- https://docs.apilayer.com/
+- https://newsapi.org/
 
 ---
 
