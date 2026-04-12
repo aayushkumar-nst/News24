@@ -1,3 +1,9 @@
+/**
+ * News24 — Spaceflight News API integration
+ * Filter / sort use array methods (no for/while on those steps).
+ */
+
+// --- DOM ---
 const container = document.getElementById("articles_container");
 const savedContainer = document.getElementById("saved_articles_container");
 const searchInput = document.getElementById("search_input");
@@ -9,20 +15,11 @@ const errorBox = document.getElementById("error_message");
 const resultCount = document.getElementById("result_count");
 const themeBtn = document.getElementById("theme_toggle");
 
-// --- GNews API (works in the browser — no CORS proxy needed) ---
-const API_KEY = "1a2dc120e38a4e64b0de4a8bcd8f2523";
+// --- Spaceflight News API ---
 
 /** Shown when an article has no image or the image fails to load */
 const FALLBACK_IMAGE =
   "https://placehold.co/640x400/e5e7eb/475569?text=News+24";
-
-/** Dropdown values → GNews `topic` (API has no exact “category” like NewsAPI) */
-const CATEGORY_TO_TOPIC = {
-  general: "general",
-  sports: "sports",
-  technology: "technology",
-  business: "business",
-};
 
 const SAVED_KEY = "news24_saved_articles";
 const THEME_KEY = "news24_theme";
@@ -42,10 +39,10 @@ try {
 const articleKey = (a) => (a && (a.url || a.title)) || "";
 
 /**
- * GNews uses `image`; saved items use `urlToImage`. One helper for both.
+ * Helper to get image URL with fallback logic
  */
 const getArticleImageUrl = (article) => {
-  const u = article.urlToImage || article.image;
+  const u = article.urlToImage || article.image || article.imageUrl;
   return u && String(u).trim() ? String(u).trim() : "";
 };
 
@@ -158,57 +155,42 @@ const renderSavedView = () => {
 };
 
 /**
- * GNews uses `image`; we normalize to `urlToImage` so cards & saved list stay the same.
+ * Normalize Spaceflight News API article data so cards & saved list stay the same.
  */
-const normalizeGNewsArticle = (raw) => {
-  const src = raw.source;
-  let sourceName = "Unknown";
-  if (typeof src === "string") {
-    sourceName = src;
-  } else if (src && src.name) {
-    sourceName = src.name;
-  }
+const normalizeArticle = (raw) => {
   return {
     title: raw.title,
-    description: raw.description || "",
-    url: raw.url,
-    urlToImage: (raw.image && String(raw.image).trim()) || "",
-    publishedAt: raw.publishedAt,
-    source: { name: sourceName },
+    description: raw.summary || "",
+    url: raw.url || "#",
+    urlToImage: (raw.image_url && String(raw.image_url).trim()) || "",
+    publishedAt: raw.published_at || "",
+    source: { name: raw.news_site || "Unknown" },
   };
 };
 
 /**
- * Direct fetch to GNews (CORS allowed for browser apps on their plan).
+ * Fetch from stable public Spaceflight News API.
  */
-const fetchTopHeadlines = async (category) => {
-  const key = String(API_KEY).trim();
-  if (!key) {
-    throw new Error("nokey");
+const fetchTopHeadlines = async () => {
+  const url = `https://api.spaceflightnewsapi.net/v4/articles/?limit=20`;
+  console.log("Fetching from:", url);
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+
+    if (!data.results || !Array.isArray(data.results)) {
+      throw new Error("Unexpected response format from Spaceflight API");
+    }
+
+    return data.results.map(normalizeArticle);
+  } catch (error) {
+    console.error("Fetch API Error:", error);
+    throw error;
   }
-
-  const topic = CATEGORY_TO_TOPIC[category] || "general";
-  const url = `https://gnews.io/api/v4/top-headlines?lang=en&country=in&max=10&apikey=${key}&topic=${encodeURIComponent(
-    topic
-  )}`;
-  console.log(url);
-
-  const response = await fetch(url);
-  const data = await response.json().catch(() => ({}));
-
-  if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
-    throw new Error(String(data.errors[0]));
-  }
-
-  if (!response.ok) {
-    throw new Error(data.message || response.statusText || "Request failed");
-  }
-
-  if (!Array.isArray(data.articles)) {
-    throw new Error("Unexpected response from GNews");
-  }
-
-  return data.articles.map(normalizeGNewsArticle);
 };
 
 const cleanArticles = (articles) =>
@@ -233,11 +215,7 @@ const loadNews = async () => {
     }
   } catch (err) {
     allArticles = [];
-    if (err.message === "nokey") {
-      showBanner("API key is empty. Set const API_KEY in script.js.", "error");
-    } else {
-      showBanner(`Could not load news: ${err.message}`, "error");
-    }
+    showBanner(`Could not load news: ${err.message}`, "error");
   }
 
   setLoading(false);
