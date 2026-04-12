@@ -1,22 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News24</title>
-    <style>
-        .article_container {
-            border: 1px solid black;
-            border-radius: 10px;
-            padding: 10px;
-            margin: 20px 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News24</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <input id="search_input" />
-    <button id="search">Search</button>
-    <div id="articles_container"></div>
+  <header class="site-header">
+    <nav class="top-navbar" aria-label="Main pages">
+      <div class="top-navbar-inner">
+        <a href="#" class="nav-link active" data-nav="home">Home</a>
+        <span class="nav-sep" aria-hidden="true">|</span>
+        <a href="#" class="nav-link" data-nav="categories">Categories</a>
+        <span class="nav-sep" aria-hidden="true">|</span>
+        <a href="#" class="nav-link" data-nav="saved">Saved</a>
+        <span class="nav-sep" aria-hidden="true">|</span>
+        <a href="#" class="nav-link" data-nav="about">About</a>
+        <span class="nav-sep" aria-hidden="true">|</span>
+        <a href="#" class="nav-link" data-nav="contact">Contact</a>
+      </div>
+    </nav>
+    <div class="header-inner header-top">
+      <div class="brand">
+        <span class="logo">News<span class="logo-accent">24</span></span>
+      </div>
+      <button type="button" class="btn-theme" id="theme_toggle" aria-label="Toggle color theme">
+        <span class="theme-icon" aria-hidden="true">◐</span>
+        <span class="theme-label">Theme</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Home: main news UI -->
+    <section id="view-home" class="page-view" data-view-section="home">
+      <nav class="nav-controls" aria-label="News controls">
+        <div class="nav-controls-inner panel controls">
+          <div class="control">
+            <label for="search_input">Search Articles</label>
+            <input type="search" id="search_input" placeholder="Search news by keyword..." autocomplete="off">
+          </div>
+          <div class="control">
+            <label for="category_filter">Category</label>
+            <select id="category_filter">
+              <option value="general" selected>General</option>
+              <option value="sports">Sports</option>
+              <option value="technology">Technology</option>
+              <option value="business">Business</option>
+            </select>
+          </div>
+          <div class="control">
+            <label for="sort_option">Sort By</label>
+            <select id="sort_option">
+              <option value="date_desc">Latest First</option>
+              <option value="date_asc">Oldest First</option>
+            </select>
+          </div>
+          <div class="control control-action">
+            <label for="search" class="label-refresh">Refresh</label>
+            <button type="button" class="btn-primary" id="search">Refresh</button>
+          </div>
+        </div>
+      </nav>
+
+      <div id="error_message" class="banner" role="status" hidden></div>
+
+      <div class="status">
+        <p class="status-text">
+          Showing <strong id="result_count">0</strong> articles
+        </p>
+        <div id="loader" class="loader" hidden>
+          <span class="loader-dot" aria-hidden="true"></span>
+          <span>Loading…</span>
+        </div>
+      </div>
+
+      <section class="news-section" aria-labelledby="latest-news-heading">
+        <h2 id="latest-news-heading" class="section-heading">Latest News</h2>
+        <p class="page-subheading">Browse, search and explore news articles</p>
+        <div id="articles_container" class="articles"></div>
+      </section>
+    </section>
+
+    <!-- Categories / Explore -->
+    <section id="view-categories" class="page-view is-hidden" data-view-section="categories">
+      <h2 class="section-heading">Browse News by Category</h2>
+      <p class="static-intro">Choose a category below. You will be taken to Home with that category loaded.</p>
+      <div class="category-grid" role="group" aria-label="Categories">
+        <button type="button" class="btn-category" data-category="general">General</button>
+        <button type="button" class="btn-category" data-category="sports">Sports</button>
+        <button type="button" class="btn-category" data-category="technology">Technology</button>
+        <button type="button" class="btn-category" data-category="business">Business</button>
+      </div>
+    </section>
+
+    <!-- Saved articles -->
+    <section id="view-saved" class="page-view is-hidden" data-view-section="saved">
+      <h2 class="section-heading">Your Saved Articles</h2>
+      <div id="saved_articles_container" class="articles articles-saved"></div>
+    </section>
+
+    <!-- About -->
+    <section id="view-about" class="page-view is-hidden" data-view-section="about">
+      <h2 class="section-heading">About</h2>
+      <div class="static-block">
+        <p><strong>News24</strong> shows top headlines from India using the NewsAPI. You can search, filter by category, sort by date, and save articles to read later.</p>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="view-contact" class="page-view is-hidden" data-view-section="contact">
+      <h2 class="section-heading">Contact Us</h2>
+      <div class="static-block">
+        <p>For any queries or feedback, please reach out at:</p>
+        <p><a href="mailto:news24@gmail.com">news24@gmail.com</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 News24. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
-<script src="script.js"></script>
 </html>
