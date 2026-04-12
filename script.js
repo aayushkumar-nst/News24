@@ -42,7 +42,7 @@ const articleKey = (a) => (a && (a.url || a.title)) || "";
  * Helper to get image URL with fallback logic
  */
 const getArticleImageUrl = (article) => {
-  const u = article.urlToImage || article.image || article.imageUrl;
+  const u = article.urlToImage || article.image || article.imageUrl || article.image_url;
   return u && String(u).trim() ? String(u).trim() : "";
 };
 
@@ -201,10 +201,11 @@ const cleanArticles = (articles) =>
 const loadNews = async () => {
   setLoading(true);
   hideBanner();
-  const category = categorySelect.value;
-
+  
+  // Category filter not implemented for Spaceflight API yet, so we ignore it.
+  
   try {
-    const raw = await fetchTopHeadlines(category);
+    const raw = await fetchTopHeadlines();
     allArticles = cleanArticles(raw);
 
     if (allArticles.length === 0) {

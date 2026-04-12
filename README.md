@@ -1,28 +1,35 @@
--> News App
+# News24 - Space News App
 
-A responsive News Web Application that fetches real-time news using a public API. Built to demonstrate JavaScript concepts like API integration, array methods, and dynamic UI.
+A **responsive** news reader built with **HTML, CSS, and JavaScript** only (no frameworks). This app fetches the latest spaceflight news from the Spaceflight News API.
 
+## Features
 
--> API Used
+- **Search** news by keywords (filter)
+- **Sort** by date/popularity
+- **Favorite** articles (Local Storage)
+- **Dark/Light** mode
+- Reliable fetching with full error recovery
 
-- https://newsapi.org/
+## Tech Stack
 
--> Features
+- **`fetch`** for JSON data, loading state, and basic error handling  
+- **Array methods:** `filter`, `sort`, `map`
+- **DOM** events, **`localStorage`**
+- **CSS:** custom properties, dark mode, Grid/Flexbox
 
--  Search news by keywords (filter)
--  Filter by category
--  Sort by date/popularity
--  Favorite articles (Local Storage)
--  Dark/Light mode
-
--> Tech Stack
-
-- HTML, CSS
-- JavaScript (ES6)
-- Fetch API
-
--> Concepts Used
+## Concepts Used
 
 - `fetch()` for API calls  
 - Array methods: `map()`, `filter()`, `sort()`  
 - DOM manipulation & event handling  
+
+## Setup
+
+1. Clone or download this folder.  
+2. Run a local server:
+
+   ```bash
+   python3 -m http.server 8080
+   ```
+
+3. Open **http://localhost:8080**
